@@ -1,25 +1,32 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Do!",
+  "name": "Do!",
+  "description": "할 일 관리를 간단하고 쉽게 해보세요!",
+  "lang": "ko",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "./images/icons/maskable_icon_x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
-      "src": "logo192.png",
+      "src": "./images/icons/maskable_icon_x512.png",
       "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
+  "screenshots": [
+    {
+        "src": "./images/icons/screenshot.png",
+        "sizes": "400x700",
+        "type": "image/png",
+        "description": "A screenshot of the home page"
+    }
+],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#FFFDF6",
+  "background_color": "#FFFDF6"
 }

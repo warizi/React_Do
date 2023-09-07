@@ -1,9 +1,15 @@
+import MainBody from "../components/MainBody/MainBody";
+import MainFooter from "../components/MainFooter/MainFooter";
+import MainHeader from "../components/MainHeader/MainHeader"
+import Style from "./MainPage.style";
 
 const MainPage = () => {
   return (
-    <div>
-      메인페이지
-    </div>
+    <Style.Container>
+      <MainHeader />
+      <MainBody />
+      <MainFooter />
+    </Style.Container>
   )
 }
 
