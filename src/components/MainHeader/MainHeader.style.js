@@ -38,7 +38,7 @@ const FlagContainer = styled.div`
   right: ${({ $active }) => $active ? '0' : '-60px'};
   width: 100px;
   height: auto;
-  z-index: 2000;
+  z-index: 100;
 
   & div:nth-child(1) {
     position: absolute;
@@ -48,7 +48,7 @@ const FlagContainer = styled.div`
     left: 0;
     transition: 0.2s;
     background-color: ${COLOR.HLNormalRed};
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: ${({ $active }) => $active ? '0 4px 8px rgba(0, 0, 0, 0.4)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
     ${({ $activeColor }) => $activeColor === COLOR.HLNormalRed ? 'z-index: 2002' : 'z-index: 2000'};
   }
   & div:nth-child(2) {
@@ -59,7 +59,7 @@ const FlagContainer = styled.div`
     left: 0;
     transition: 0.2s;
     background-color: ${COLOR.HLNormalLBlue};
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: ${({ $active }) => $active ? '0 4px 8px rgba(0, 0, 0, 0.4)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
     ${({ $activeColor }) => $activeColor === COLOR.HLNormalLBlue ? 'z-index: 2002' : 'z-index: 2000'};
   }
   & div:nth-child(3) {
@@ -70,7 +70,7 @@ const FlagContainer = styled.div`
     left: 0;
     transition: 0.2s;
     background-color: ${COLOR.HLNormalGreen};
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: ${({ $active }) => $active ? '0 4px 8px rgba(0, 0, 0, 0.4)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
     ${({ $activeColor }) => $activeColor === COLOR.HLNormalGreen ? 'z-index: 2002' : 'z-index: 2000'};
   }
   & div:nth-child(4) {
@@ -81,7 +81,7 @@ const FlagContainer = styled.div`
     left: 0;
     transition: 0.2s;
     background-color: ${COLOR.HLNormalYellow};
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: ${({ $active }) => $active ? '0 4px 8px rgba(0, 0, 0, 0.4)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
     ${({ $activeColor }) => $activeColor === COLOR.HLNormalYellow ? 'z-index: 2002' : 'z-index: 2000'};
   }
   & div:nth-child(5) {
@@ -91,8 +91,8 @@ const FlagContainer = styled.div`
     top: ${({ $active }) => $active ? '240px' : '0'};
     left: 0;
     transition: 0.2s;
-    background-color: #F3EDD7;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    background-color: ${({  $activeColor }) => $activeColor === 'none' ? '#F3EDD7' : $activeColor};
+    box-shadow: ${({ $active }) => $active ? '0 4px 8px rgba(0, 0, 0, 0.4)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
     ${({ $activeColor }) => $activeColor === 'none' ? 'z-index: 2003' : 'z-index: 2003'};
   }
 

@@ -9,7 +9,7 @@ const Container = styled.div`
   gap: 35px;
   width: 100%;
   height: 125px;
-  z-index: 100;
+  z-index: 3000;
 `;
 const Palette = styled.div`
   display: flex;

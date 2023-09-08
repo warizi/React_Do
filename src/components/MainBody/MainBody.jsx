@@ -1,4 +1,4 @@
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import ListItem from "../ListItem/ListItem";
 import Style from "./MainBody.style";
 import todoListState from "../../states/todoListState";
@@ -7,6 +7,8 @@ import { createId, getStorage, setStorage } from "../../utils/Storage.js";
 import { doList } from "../../states/doListSelector";
 import { doneList } from "../../states/doneListSelector";
 import toolsState from "../../states/tools/toolsState";
+import colorFlagState from "../../states/color/colorFlagState";
+import { COLOR } from "../../styles/COLOR";
 
 const TODO_LIST_KEY = 'todoList';
 
@@ -14,7 +16,8 @@ const MainBody = () => {
   const [ todoList, setTodoList ] = useRecoilState(todoListState);
   const [ filteredDoList ] = useRecoilState(doList);
   const [ filteredDoneList ] = useRecoilState(doneList);
-  const selectedTool = useRecoilValue(toolsState);
+  const [ selectedTool, setSelectTool ] = useRecoilState(toolsState);
+  const [ selectedFlag, setSelectedFlag ] = useRecoilState(colorFlagState);
   const inputRef = useRef(null);
   const today = new Date();
 
@@ -63,11 +66,12 @@ const MainBody = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const contentValue = event.target[0].value;
+    const highlightColor = convertColor();
     const newListItem = {
       id: createId(TODO_LIST_KEY),
       content: contentValue,
       checked: false,
-      highlight: 'none',
+      highlight: highlightColor,
       date: today,
     }
     event.target[0].value = '';
@@ -75,11 +79,29 @@ const MainBody = () => {
     setStorage(TODO_LIST_KEY, newTodoList);
     setTodoList(newTodoList);
   }
+  const convertColor = () => {
+    if(selectedFlag === 'none') return 'none';
+    if(selectedFlag === COLOR.HLNormalRed) return COLOR.HLred;
+    if(selectedFlag === COLOR.HLNormalYellow) return COLOR.HLyellow;
+    if(selectedFlag === COLOR.HLNormalGreen) return COLOR.HLGreen;
+    if(selectedFlag === COLOR.HLNormalLBlue) return COLOR.HLBlue;
+  }
+  const cancelPen = (event) => {
+    const submitClick = event.target.innerText;
+    const inputClick = event.target.id;
+    if(submitClick === '추가') return;
+    if(inputClick === 'input') return;
+    if(selectedTool !== 'pen') return;
+    inputRef.current.blur();
+    setSelectTool('none');
+  }
 
   return (
-    <Style.Container>
+    <Style.Container onClick={cancelPen} onTouchStart={cancelPen}>
+      <Style.CancelBackground $selectedTool={selectedTool}></Style.CancelBackground>
       <Style.InputContainer $tool={selectedTool} onSubmit={handleSubmit}>
-        <input ref={inputRef} type="text" />
+        <label htmlFor="input"></label>
+        <input id="input" ref={inputRef} type="text" />
         <button>추가</button>
       </Style.InputContainer>
       <Style.ListContainer>

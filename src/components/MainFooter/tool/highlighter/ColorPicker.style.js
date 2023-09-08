@@ -5,6 +5,7 @@ const Container = styled.div`
   height: 50px;
   border-radius: 50%;
   background-color: ${({ $color }) => $color};
+  z-index: 4000;
   cursor: pointer;
 `;
 

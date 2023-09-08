@@ -5,13 +5,13 @@
   "lang": "ko",
   "icons": [
     {
-      "src": "./images/icons/maskable_icon_x192.png",
+      "src": "./images/maskable_icon_x192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "maskable"
     },
     {
-      "src": "./images/icons/maskable_icon_x512.png",
+      "src": "./images/maskable_icon_x512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
@@ -19,7 +19,7 @@
   ],
   "screenshots": [
     {
-        "src": "./images/icons/screenshot.png",
+        "src": "./images/screenshot.png",
         "sizes": "400x700",
         "type": "image/png",
         "description": "A screenshot of the home page"

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Style from './ListItem.style';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import todoListState from '../../states/todoListState';
@@ -16,6 +16,13 @@ const ListItem = ({ content, checked, id, highlight }) => {
   const selectedTool = useRecoilValue(toolsState);
   const textArea = useRef(null);
   let timeout = null;
+
+  useEffect(() => {
+    if(!textArea.current) return;
+    const textAreaLength = textArea.current.value.length;
+    textArea.current.setSelectionRange(textAreaLength, textAreaLength);
+    textArea.current.focus();
+  }, [isUpdate])
 
   const handleCheckBoxClick = (id) => {
     const list = getStorage(TODO_LIST_KEY);
@@ -36,24 +43,20 @@ const ListItem = ({ content, checked, id, highlight }) => {
   }
 
   const handleContentMouseDown = (event) => {
-    if(event.type !== 'touchstart') event.preventDefault();
     if(textArea.current) return;
     timeout = setTimeout(() => {
       setIsUpdate(true);
     }, 500);
   }
   const handleContentMouseUp = (event) => {
-    if(event.type !== 'touchend') event.preventDefault();
+    // if(event.type !== 'touchend' && event.type !== 'touchmove') event.preventDefault();
     clearTimeout(timeout);
 
     if(!textArea.current) return;
-    if(document.activeElement === textArea.current) return;
-
-    const textAreaLength = textArea.current.value.length;
-    textArea.current.setSelectionRange(textAreaLength, textAreaLength);
-    textArea.current.focus();
+    // if(document.activeElement === textArea.current) return;
     resizeTextArea();
   }
+
   const handleTextAreaBlur = () => {
     setIsUpdate(false);
 
@@ -94,37 +97,44 @@ const ListItem = ({ content, checked, id, highlight }) => {
     textArea.current.style.height = textArea.current.scrollHeight + 'px';
   }
 
+
   return (
-    <Style.Cotnainer 
-      $highlight={highlight} 
-      $checked={checked} 
-      onMouseDown={handleContentMouseDown} 
-      onMouseUp={handleContentMouseUp}
-      $isUpdate={isUpdate}
-      onTouchStart={handleContentMouseDown}
-      onTouchEnd={handleContentMouseUp}
-    >
-      <Style.CheckBox $checked={checked} onClick={() => handleCheckBoxClick(id)}>
-        <div></div>
-      </Style.CheckBox>
-      {
-        isUpdate ? 
-        <textarea 
-          rows={1} 
-          onKeyDown={handleTextAreaEnter} 
-          onBlur={handleTextAreaBlur} 
-          ref={textArea} 
-          onChange={handleTextAreaChange} 
-          value={contentValue} 
-        /> : 
-        <p onClick={handleHighLight}>
-          {contentValue}
-        </p>
-      }
-      <Style.DeleteButton $active={selectedTool} onClick={() => handleDeleteButtonClick(id)}>
-        삭제
-      </Style.DeleteButton>
-    </Style.Cotnainer>
+    <>
+      <Style.CancelBackground $isUpdate={isUpdate}></Style.CancelBackground>
+      <Style.Cotnainer 
+        $highlight={highlight} 
+        $checked={checked} 
+        onMouseDown={handleContentMouseDown} 
+        onMouseUp={handleContentMouseUp}
+        onMouseLeave={handleContentMouseUp}
+        $isUpdate={isUpdate}
+        onTouchStart={handleContentMouseDown}
+        onTouchEnd={handleContentMouseUp}
+        onTouchCancel={handleContentMouseUp}
+        onTouchMove={handleContentMouseUp}
+      >
+        <Style.CheckBox $checked={checked} onClick={() => handleCheckBoxClick(id)}>
+          <div></div>
+        </Style.CheckBox>
+        {
+          isUpdate ? 
+          <textarea 
+            rows={1} 
+            onKeyDown={handleTextAreaEnter} 
+            onBlur={handleTextAreaBlur} 
+            ref={textArea} 
+            onChange={handleTextAreaChange} 
+            value={contentValue} 
+          /> : 
+          <p onClick={handleHighLight}>
+            {contentValue}
+          </p>
+        }
+        <Style.DeleteButton $active={selectedTool} onClick={() => handleDeleteButtonClick(id)}>
+          삭제
+        </Style.DeleteButton>
+      </Style.Cotnainer>
+    </>
   );
 };
 
