@@ -49,11 +49,9 @@ const ListItem = ({ content, checked, id, highlight }) => {
     }, 500);
   }
   const handleContentMouseUp = (event) => {
-    // if(event.type !== 'touchend' && event.type !== 'touchmove') event.preventDefault();
     clearTimeout(timeout);
 
     if(!textArea.current) return;
-    // if(document.activeElement === textArea.current) return;
     resizeTextArea();
   }
 

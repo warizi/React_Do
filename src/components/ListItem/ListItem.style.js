@@ -80,7 +80,7 @@ const DeleteButton = styled.button`
 `;
 
 const CancelBackground = styled.div`
-  position: absolute;
+  position: fixed;
   display: ${({ $isUpdate }) => $isUpdate ? 'block' : 'none' };
   background-color: ${COLOR.background};
   opacity: 0.5;

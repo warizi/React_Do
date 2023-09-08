@@ -95,9 +95,11 @@ const MainBody = () => {
     inputRef.current.blur();
     setSelectTool('none');
   }
-
+  const preventContextMenu = (event) => {
+    event.preventDefault();
+  }
   return (
-    <Style.Container onClick={cancelPen} onTouchStart={cancelPen}>
+    <Style.Container onContextMenu={preventContextMenu} onClick={cancelPen} onTouchStart={cancelPen}>
       <Style.CancelBackground $selectedTool={selectedTool}></Style.CancelBackground>
       <Style.InputContainer $tool={selectedTool} onSubmit={handleSubmit}>
         <label htmlFor="input"></label>
