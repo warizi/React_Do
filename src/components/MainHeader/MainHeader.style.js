@@ -9,7 +9,7 @@ const Container = styled.div`
   justify-content: center;
   width: 100vw;
   max-width: 1000px;
-  height: 140px;
+  height: 120px;
   z-index: 1300;
 
   & h1 {

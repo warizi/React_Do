@@ -9,6 +9,8 @@ import { doneList } from "../../states/doneListSelector";
 import toolsState from "../../states/tools/toolsState";
 import colorFlagState from "../../states/color/colorFlagState";
 import { COLOR } from "../../styles/COLOR";
+import { DragDropContext, Draggable, Droppable,  } from "react-beautiful-dnd";
+import { handleDragEnd } from "../../utils/handleDragEnd";
 
 const TODO_LIST_KEY = 'todoList';
 
@@ -92,33 +94,48 @@ const MainBody = () => {
     if(submitClick === '추가') return;
     if(inputClick === 'input') return;
     if(selectedTool !== 'pen') return;
-    inputRef.current.blur();
+    // inputRef.current.blur();
     setSelectTool('none');
   }
   const preventContextMenu = (event) => {
     event.preventDefault();
   }
+
   return (
-    <Style.Container onContextMenu={preventContextMenu} onClick={cancelPen} onTouchStart={cancelPen}>
-      <Style.CancelBackground $selectedTool={selectedTool}></Style.CancelBackground>
+    <Style.Container onContextMenu={preventContextMenu}>
+      <Style.CancelBackground $selectedTool={selectedTool} onClick={cancelPen}></Style.CancelBackground>
       <Style.InputContainer $tool={selectedTool} onSubmit={handleSubmit}>
         <label htmlFor="input"></label>
         <input id="input" ref={inputRef} type="text" />
         <button>추가</button>
       </Style.InputContainer>
-      <Style.ListContainer>
-      {
-        filteredDoList.map(({ id, content, checked, highlight }) => {
-          return <ListItem key={id} highlight={highlight} content={content} checked={checked} id={id}/>
-          }
-        )
-      }
-      {
-        filteredDoneList.map(({ id, content, checked, highlight }) => {
-          return <ListItem key={id} highlight={highlight} content={content} checked={checked} id={id}/>
-        })
-      }
-      </Style.ListContainer>
+      <DragDropContext onDragEnd={(result) => handleDragEnd(result, selectedFlag, todoList, setTodoList)}>
+        <Style.ListContainer>
+          <Droppable droppableId="doList">
+            {(provided) => (
+              <div ref={provided.innerRef} {...provided.droppableProps}>
+                {
+                  filteredDoList.map(({ id, content, checked, highlight }, index) => (
+                    <Draggable draggableId={id.toString()} key={id} index={index}>
+                      {(provided) => (
+                        <div ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
+                          <ListItem key={id} highlight={highlight} content={content} checked={checked} id={id}/>
+                        </div>  
+                      )}
+                    </Draggable>
+                  ))
+                }
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        {
+          filteredDoneList.map(({ id, content, checked, highlight }) => {
+            return <ListItem key={id} highlight={highlight} content={content} checked={checked} id={id}/>
+          })
+        }
+        </Style.ListContainer>
+      </DragDropContext>
     </Style.Container>
   )
 }

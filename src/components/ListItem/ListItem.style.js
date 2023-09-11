@@ -12,6 +12,7 @@ const Cotnainer = styled.div`
   padding: 10px 15px;
   gap: 10px;
   transition: 0.2s;
+  overflow: hidden;
   background-color: ${COLOR.background};
   transform: ${({ $isUpdate }) => $isUpdate ? 'translateY(-10px)' : 'none' };
   ${({ $isUpdate }) => $isUpdate ? 'box-shadow: 0 20px 10px rgba(0, 0, 0, 0.3)' : '' };

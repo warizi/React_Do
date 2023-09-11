@@ -4,7 +4,7 @@ import { COLOR } from "../../styles/COLOR";
 const Container = styled.div`
   position: relative;
   width: 100%;
-  height: calc(100vh - 265px);
+  height: calc(100vh - 245px);
   z-index: 101;
 `;
 const ListContainer = styled.div`
@@ -34,7 +34,7 @@ const InputContainer = styled.form`
     font-size: 16px;
     outline: none;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    z-index: 1202;
+    z-index: 1302;
   }
 
   & button {
@@ -48,11 +48,11 @@ const InputContainer = styled.form`
     outline: none;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    z-index: 1202;
+    z-index: 1302;
   }
 `;
 const CancelBackground = styled.div`
-  position: absolute;
+  position: fixed;
   display: ${({ $selectedTool }) => $selectedTool === 'pen' ? 'block' : 'none'};
   top: 0;
   left: 0;
@@ -60,7 +60,7 @@ const CancelBackground = styled.div`
   height: 100%;
   background-color: ${COLOR.background};
   opacity: 0.5;
-  z-index: 1201;
+  z-index: 1301;
 
 `;
 

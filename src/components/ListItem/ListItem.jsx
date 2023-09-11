@@ -15,22 +15,23 @@ const ListItem = ({ content, checked, id, highlight }) => {
   const [ isUpdate, setIsUpdate ] = useState(false);
   const selectedTool = useRecoilValue(toolsState);
   const textArea = useRef(null);
-  let timeout = null;
 
   useEffect(() => {
     if(!textArea.current) return;
-    const textAreaLength = textArea.current.value.length;
-    textArea.current.setSelectionRange(textAreaLength, textAreaLength);
-    textArea.current.focus();
+    resizeTextArea();
   }, [isUpdate])
 
   const handleCheckBoxClick = (id) => {
     const list = getStorage(TODO_LIST_KEY);
-    const sameIdIndex = list.findIndex((item) => item.id === id);
-    if(sameIdIndex === -1) return; 
-    list[sameIdIndex].checked = !list[sameIdIndex].checked;
-    setStorage(TODO_LIST_KEY, list);
-    setTodoList(list);
+    const itemIndex = list.findIndex((item) => item.id === id);
+    if(itemIndex === -1) return; 
+    list[itemIndex].checked = !list[itemIndex].checked;
+
+    const noneCheckedList = list.filter((item) => item.checked === false);
+    const checkedList = list.filter((item) => item.checked === true);
+    const newOrderedList = [...noneCheckedList, ...checkedList];
+    setStorage(TODO_LIST_KEY, newOrderedList);
+    setTodoList(newOrderedList);
   }
 
   const handleDeleteButtonClick = (id) => {
@@ -42,22 +43,8 @@ const ListItem = ({ content, checked, id, highlight }) => {
     setTodoList(list);
   }
 
-  const handleContentMouseDown = (event) => {
-    if(textArea.current) return;
-    timeout = setTimeout(() => {
-      setIsUpdate(true);
-    }, 500);
-  }
-  const handleContentMouseUp = (event) => {
-    clearTimeout(timeout);
-
-    if(!textArea.current) return;
-    resizeTextArea();
-  }
-
-  const handleTextAreaBlur = () => {
+  const updateItem = () => {
     setIsUpdate(false);
-
     const list = getStorage(TODO_LIST_KEY);
     const sameIdIndex = list.findIndex((item) => item.id === id);
     if(sameIdIndex === -1) return;
@@ -67,7 +54,7 @@ const ListItem = ({ content, checked, id, highlight }) => {
   }
   const handleTextAreaEnter = (event) => {
     if(event.key === 'Enter') {
-      textArea.current.blur();
+      updateItem();
     }
   }
   const handleTextAreaChange = (event) => {
@@ -95,21 +82,21 @@ const ListItem = ({ content, checked, id, highlight }) => {
     textArea.current.style.height = textArea.current.scrollHeight + 'px';
   }
 
-
+  const focusOut = () => {
+    updateItem();
+  }
+  const activeUpdate = () => {
+    if(selectedTool !== 'none') return;
+    setIsUpdate(true);
+  }
   return (
     <>
-      <Style.CancelBackground $isUpdate={isUpdate}></Style.CancelBackground>
+      <Style.CancelBackground onClick={focusOut} $isUpdate={isUpdate}></Style.CancelBackground>
       <Style.Cotnainer 
         $highlight={highlight} 
         $checked={checked} 
-        onMouseDown={handleContentMouseDown} 
-        onMouseUp={handleContentMouseUp}
-        onMouseLeave={handleContentMouseUp}
         $isUpdate={isUpdate}
-        onTouchStart={handleContentMouseDown}
-        onTouchEnd={handleContentMouseUp}
-        onTouchCancel={handleContentMouseUp}
-        onTouchMove={handleContentMouseUp}
+        onClick={activeUpdate}
       >
         <Style.CheckBox $checked={checked} onClick={() => handleCheckBoxClick(id)}>
           <div></div>
@@ -119,7 +106,6 @@ const ListItem = ({ content, checked, id, highlight }) => {
           <textarea 
             rows={1} 
             onKeyDown={handleTextAreaEnter} 
-            onBlur={handleTextAreaBlur} 
             ref={textArea} 
             onChange={handleTextAreaChange} 
             value={contentValue} 

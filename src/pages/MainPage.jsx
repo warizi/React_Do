@@ -7,7 +7,7 @@ const MainPage = () => {
   return (
     <Style.Container>
       <MainHeader />
-      <MainBody />
+        <MainBody />
       <MainFooter />
     </Style.Container>
   )
