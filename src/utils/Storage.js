@@ -9,7 +9,12 @@ export const setStorage = (STORAGE_KEY, data) => {
 
 export const createId = (STORAGE_KEY) => {
     const data = getStorage(STORAGE_KEY);
-    const lastIndex = data.length - 1;
-    const id = data.length > 0 ? data[lastIndex].id + 1 : 1;
+    if(data.length === 0) return 1;
+    if(data.length === 1) return data[0].id + 1;
+    const largestId = data.reduce((prev, current) => {
+        return prev.id > current.id ? prev.id : current.id
+    })
+
+    const id = largestId + 1;
     return id
 }
