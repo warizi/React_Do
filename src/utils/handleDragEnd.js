@@ -3,16 +3,18 @@ import { getStorage, setStorage } from "./Storage";
 
 
 export const handleDragEnd = (
-    {destination, draggableId, source}, 
+    { destination, draggableId, source }, 
     selectedFlag, 
     todoList, 
     setTodoList 
   ) => {
-    if(!destination) return;
-    const startIndex = source.index;
-    const endIndex = destination.index;
-    const list = getStorage('todoList');
-    if(source.droppableId === destination.droppableId && startIndex === endIndex) return;
+    
+  if(!destination) return;
+  const startIndex = source.index;
+  const endIndex = destination.index;
+  const list = getStorage('todoList');
+  
+  if(source.droppableId === destination.droppableId && startIndex === endIndex) return;
   
   const redList = list.filter((item) => item.highlight === COLOR.HLred);
   const yellowList = list.filter((item) => item.highlight === COLOR.HLyellow);

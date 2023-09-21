@@ -33,6 +33,7 @@ const InputContainer = styled.form`
     padding: 0 15px;
     font-size: 16px;
     outline: none;
+    font-size: ${({ $fontSize }) => `${$fontSize}px` };
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     z-index: 1302;
   }

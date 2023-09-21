@@ -8,7 +8,7 @@ import colorState from '../../states/color/colorHLState';
 
 const TODO_LIST_KEY = 'todoList';
 
-const ListItem = ({ content, checked, id, highlight }) => {
+const ListItem = ({ content, checked, id, highlight, fontSize }) => {
   const [ todoList, setTodoList ] = useRecoilState(todoListState);
   const highlightColor = useRecoilValue(colorState);
   const [ contentValue, setContentValue ] = useState(content);
@@ -16,15 +16,10 @@ const ListItem = ({ content, checked, id, highlight }) => {
   const selectedTool = useRecoilValue(toolsState);
   const textArea = useRef(null);
 
-  useEffect(() => {
-    if(!textArea.current) return;
-    resizeTextArea();
-  }, [isUpdate])
-
   const handleCheckBoxClick = (id) => {
     const list = getStorage(TODO_LIST_KEY);
     const itemIndex = list.findIndex((item) => item.id === id);
-    if(itemIndex === -1) return; 
+    if(itemIndex === -1) return;
     list[itemIndex].checked = !list[itemIndex].checked;
 
     const noneCheckedList = list.filter((item) => item.checked === false);
@@ -52,15 +47,18 @@ const ListItem = ({ content, checked, id, highlight }) => {
     setStorage(TODO_LIST_KEY, list);
     setTodoList(list);
   }
+
   const handleTextAreaEnter = (event) => {
     if(event.key === 'Enter') {
       updateItem();
     }
   }
+
   const handleTextAreaChange = (event) => {
     resizeTextArea();
     setContentValue(event.target.value);
   }
+
   const handleHighLight = () => {
     if(selectedTool !== 'highlighter') return;
     const list = getStorage(TODO_LIST_KEY);
@@ -85,10 +83,17 @@ const ListItem = ({ content, checked, id, highlight }) => {
   const focusOut = () => {
     updateItem();
   }
+
   const activeUpdate = () => {
     if(selectedTool !== 'none') return;
     setIsUpdate(true);
   }
+
+  useEffect(() => {
+    if(!textArea.current) return;
+    resizeTextArea();
+  }, [isUpdate])
+
   return (
     <>
       <Style.CancelBackground onClick={focusOut} $isUpdate={isUpdate}></Style.CancelBackground>
@@ -96,6 +101,7 @@ const ListItem = ({ content, checked, id, highlight }) => {
         $highlight={highlight} 
         $checked={checked} 
         $isUpdate={isUpdate}
+        $fontSize={fontSize}
         onClick={activeUpdate}
       >
         <Style.CheckBox $checked={checked} onClick={() => handleCheckBoxClick(id)}>

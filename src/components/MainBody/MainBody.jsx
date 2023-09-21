@@ -1,4 +1,4 @@
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import ListItem from "../ListItem/ListItem";
 import Style from "./MainBody.style";
 import todoListState from "../../states/todoListState";
@@ -11,6 +11,7 @@ import colorFlagState from "../../states/color/colorFlagState";
 import { COLOR } from "../../styles/COLOR";
 import { DragDropContext, Draggable, Droppable,  } from "react-beautiful-dnd";
 import { handleDragEnd } from "../../utils/handleDragEnd";
+import fontSizeState from "../../states/font/fontSizeState";
 
 const TODO_LIST_KEY = 'todoList';
 
@@ -20,6 +21,7 @@ const MainBody = () => {
   const [ filteredDoneList ] = useRecoilState(doneList);
   const [ selectedTool, setSelectTool ] = useRecoilState(toolsState);
   const [ selectedFlag, setSelectedFlag ] = useRecoilState(colorFlagState);
+  const [ fontsize, setFontsize ] = useRecoilState(fontSizeState);
   const inputRef = useRef(null);
   const today = new Date();
 
@@ -55,8 +57,12 @@ const MainBody = () => {
     setStorage(TODO_LIST_KEY, newList);
     setTodoList(newList);
   }
-
+  const initFontSizes = () => {
+    if(getStorage('fontSize').length === 0) setStorage('fontSize', 16);
+    setFontsize(getStorage('fontSize'));
+  }
   useEffect(() => {
+    initFontSizes();
     deleteDoneList();
     updateDateList();
   }, []);
@@ -104,7 +110,7 @@ const MainBody = () => {
   return (
     <Style.Container onContextMenu={preventContextMenu}>
       <Style.CancelBackground $selectedTool={selectedTool} onClick={cancelPen}></Style.CancelBackground>
-      <Style.InputContainer $tool={selectedTool} onSubmit={handleSubmit}>
+      <Style.InputContainer $tool={selectedTool} onSubmit={handleSubmit} $fontSize={fontsize}>
         <label htmlFor="input"></label>
         <input id="input" ref={inputRef} type="text" />
         <button>추가</button>
@@ -119,7 +125,14 @@ const MainBody = () => {
                     <Draggable draggableId={id.toString()} key={id} index={index}>
                       {(provided) => (
                         <div ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
-                          <ListItem key={id} highlight={highlight} content={content} checked={checked} id={id}/>
+                          <ListItem 
+                            key={id} 
+                            highlight={highlight} 
+                            content={content} 
+                            checked={checked} 
+                            id={id}
+                            fontSize={fontsize}
+                          />
                         </div>  
                       )}
                     </Draggable>
@@ -131,7 +144,7 @@ const MainBody = () => {
           </Droppable>
         {
           filteredDoneList.map(({ id, content, checked, highlight }) => {
-            return <ListItem key={id} highlight={highlight} content={content} checked={checked} id={id}/>
+            return <ListItem key={id} highlight={highlight} content={content} checked={checked} id={id} fontSize={fontsize}/>
           })
         }
         </Style.ListContainer>

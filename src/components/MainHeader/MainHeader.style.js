@@ -7,8 +7,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100vw;
-  max-width: 1000px;
+  width: 100%;
   height: 120px;
   z-index: 1300;
 
@@ -98,8 +97,23 @@ const FlagContainer = styled.div`
 
 `;
 
+const ControlContainer = styled.div`
+  position: absolute;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  bottom: ${({ $isActive }) => $isActive ? 'calc(-100vh + 245px)' : '0'};
+  left: 0;
+  width: 100%;
+  background-color: ${COLOR.background};
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  transition: 0.2s;
+  overflow: hidden;
+  height: ${({ $isActive }) => $isActive ? 'calc(100vh - 245px)' : '0'};
+`;
+
 // eslint-disable-next-line
 export default {
   Container,
   FlagContainer,
+  ControlContainer
 }

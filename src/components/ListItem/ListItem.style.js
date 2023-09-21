@@ -23,16 +23,16 @@ const Cotnainer = styled.div`
     padding: 5px;
     background-color: ${({ $highlight }) => $highlight ? $highlight : 'none' };
     color: ${({ $checked }) => $checked ? '#9d9d9d' : '#000' };
-    width: 85%;
+    width: calc(100% - 30px);
     word-wrap: break-word;
-    font-size: 16px;
+    font-size: ${({ $fontSize }) => `${$fontSize}px` };
     text-decoration: ${({ $checked }) => $checked ? 'line-through' : 'none' };
     border-radius: 10px;
   }
 
   & textarea {
-    width: 85%;
-    font-size: 16px;
+    width: calc(100% - 30px);
+    font-size: ${({ $fontSize }) => `${$fontSize}px` };
     border: none;
     resize: none;
     height: auto;

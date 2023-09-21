@@ -12,9 +12,8 @@ export const createId = (STORAGE_KEY) => {
     if(data.length === 0) return 1;
     if(data.length === 1) return data[0].id + 1;
     const largestId = data.reduce((prev, current) => {
-        return prev.id > current.id ? prev.id : current.id
-    })
-
+        return prev > current.id ? prev : current.id
+    }, 1)
     const id = largestId + 1;
     return id
 }
