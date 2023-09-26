@@ -1,3 +1,5 @@
+const SWIPE_LENGTH = 50;
+const SWIPE_TIEMR = 400;
 
 const detectSwipe = (event, offset, setOffset) => {
   let { _reactName, touches, changedTouches } = event;
@@ -14,22 +16,23 @@ const detectSwipe = (event, offset, setOffset) => {
       const diffX = endX - startX;
       const diffY = endY - startY;
 
-      const isActiveTimer = new Date().getTime() - touchDate.getTime() < 400;
+      const isActiveTimer = new Date().getTime() - touchDate.getTime() < SWIPE_TIEMR;
+
       if(!isActiveTimer) return 'none';
 
       if (Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX > 50) {
+        if (diffX > SWIPE_LENGTH) {
           setOffset({ x: 0, y: 0, touchDate: null });
           return 'right';
-        } else if(diffX < -50) {
+        } else if(diffX < -SWIPE_LENGTH) {
           setOffset({ x: 0, y: 0, touchDate: null });
           return 'left';
         }
       } else {
-        if (diffY > 50) {
+        if (diffY > SWIPE_LENGTH) {
           setOffset({ x: 0, y: 0, touchDate: null });
           return 'down';
-        } else if(diffY < -50) {
+        } else if(diffY < -SWIPE_LENGTH) {
           setOffset({ x: 0, y: 0, touchDate: null });
           return 'up';
         }
@@ -52,20 +55,19 @@ const detectSwipe = (event, offset, setOffset) => {
 
       const isMouseActiveTimer = new Date().getTime() - mouseDate.getTime() < 400;
       if(!isMouseActiveTimer) return 'none';
-
       if (Math.abs(mouseDiffX) > Math.abs(mouseDiffY)) {
-        if (mouseDiffX > 50) {
+        if (mouseDiffX > SWIPE_LENGTH) {
           setOffset({ x: 0, y: 0, touchDate: null });
           return 'right';
-        } else if(mouseDiffY < -50) {
+        } else if(mouseDiffX < -SWIPE_LENGTH) {
           setOffset({ x: 0, y: 0, touchDate: null });
           return 'left';
         }
       } else {
-        if (mouseDiffY > 50) {
+        if (mouseDiffY > SWIPE_LENGTH) {
           setOffset({ x: 0, y: 0, touchDate: null });
           return 'down';
-        } else if(mouseDiffY < -50) {
+        } else if(mouseDiffY < -SWIPE_LENGTH) {
           setOffset({ x: 0, y: 0, touchDate: null });
           return 'up';
         }

@@ -1,15 +1,24 @@
 import { styled } from "styled-components";
 import { COLOR } from "../../styles/COLOR";
 
+const getCheckboxSizeFromFontSize = (fontSize) => {
+  if(fontSize > 15) return { size: '35px', border: '3px', radius: '10px'};
+  return { 
+    size: `${fontSize * 2}px`, 
+    border: `${fontSize * 0.2}px`, 
+    radius: `${fontSize * 2/3}px`
+  }
+}
+
 const Cotnainer = styled.div`
   position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
   width: 100%;
-  min-height: 40px;
+  min-height: 30px;
   border-bottom: 1px dashed #000;
-  padding: 10px 15px;
+  padding: 8px 10px;
   gap: 10px;
   transition: 0.2s;
   overflow: hidden;
@@ -44,10 +53,10 @@ const Cotnainer = styled.div`
 
 const CheckBox = styled.div`
   position: relative;
-  width: 35px;
-  height: 35px;
-  border: 4px solid ${({ $checked }) => $checked ? '#d9d9d9' : '#000' };
-  border-radius: 10px;
+  width: ${({ $fontSize }) => getCheckboxSizeFromFontSize($fontSize).size};
+  height: ${({ $fontSize }) => getCheckboxSizeFromFontSize($fontSize).size};
+  border: ${({ $fontSize }) => getCheckboxSizeFromFontSize($fontSize).border} solid ${({ $checked }) => $checked ? '#d9d9d9' : '#000' };
+  border-radius: ${({ $fontSize }) => getCheckboxSizeFromFontSize($fontSize).radius};
   background-color: rgba(0, 0, 0, 0);
   cursor: pointer;
 
@@ -57,8 +66,8 @@ const CheckBox = styled.div`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 20px;
-    height: 20px;
+    width: 80%;
+    height: 80%;
     background-color: ${({ $checked }) => $checked ? '#d9d9d9' : '#000' };
     border-radius: 5px;
   }

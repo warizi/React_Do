@@ -18,7 +18,7 @@ const Palette = styled.div`
   align-items: center;
   gap: 15px;
   position: absolute;
-  transition: 0.2s;
+  transition: 0.1s;
   top: ${({ $active }) => $active === 'highlighter' ? '-70px' : '300px'};
   left: calc((100% - 300px) / 2);
   width: 300px;

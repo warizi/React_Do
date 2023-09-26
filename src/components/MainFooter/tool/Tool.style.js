@@ -1,6 +1,8 @@
 import { styled } from "styled-components";
 import { COLOR } from "../../../styles/COLOR";
 
+const ANIMATION_TIME = 0.1;
+
 const Container = styled.div`
   position: relative;
   width: 64px;
@@ -13,7 +15,7 @@ const Container = styled.div`
     left: 0;
     width: 64px;
     height: 121px;
-    transition: 0.2s;
+    transition: ${`${ANIMATION_TIME}s`};
     z-index: 101;
     ${({ $selected }) => {
       return $selected ?
@@ -39,7 +41,7 @@ const Container = styled.div`
       if($color === COLOR.HLyellow) return 'rgba(240, 230, 134, 1)'
     }};
     z-index: 102;
-    transition: 0.2s;
+    transition: ${`${ANIMATION_TIME}s`};
     ${({ $selected }) => {
       return $selected ?
       'transform: translateY(-30px)'

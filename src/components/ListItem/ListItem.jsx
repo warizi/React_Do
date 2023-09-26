@@ -104,7 +104,7 @@ const ListItem = ({ content, checked, id, highlight, fontSize }) => {
         $fontSize={fontSize}
         onClick={activeUpdate}
       >
-        <Style.CheckBox $checked={checked} onClick={() => handleCheckBoxClick(id)}>
+        <Style.CheckBox $fontSize={fontSize} $checked={checked} onClick={() => handleCheckBoxClick(id)}>
           <div></div>
         </Style.CheckBox>
         {

@@ -6,6 +6,8 @@ import colorFlagState from '../../states/color/colorFlagState';
 import detectSwipe from '../../utils/detectSwipe';
 import SortController from './control/SortController';
 import FontSizeController from './control/FontSizeController';
+import pageState from '../../states/page/pageState';
+import { PAGES } from '../../constants/PAGES';
 
 const DAY_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -15,6 +17,7 @@ const MainHeader = () => {
   const [ isControlBox, setIsControlBox ] = useState(false);
   const [ activeColor, setActiveColor ] = useRecoilState(colorFlagState);
   const [ titleText, setTitleText ] = useState('Do!');
+  const [ page, setPage ] = useRecoilState(pageState);
 
   const today = new Date();
   const year = today.getFullYear();
@@ -29,7 +32,7 @@ const MainHeader = () => {
     return false;
   }
   const retunrDate = () => {
-    if (date < 10) return `0${date}`
+    if (date < 10) return `0${date}`;
     return date;
   }
   const returnMonth = () => {
@@ -43,13 +46,32 @@ const MainHeader = () => {
     setActiveColor(color);
   }
   const handleSwipe = (event) => {
-    if(detectSwipe(event, swipe, setSwipe) === 'down') {
+    const swipeType = detectSwipe(event, swipe, setSwipe);
+    if(swipeType === 'down') {
       setTitleText('Setting!');
       setIsControlBox(true);
     }
-    if(detectSwipe(event, swipe, setSwipe) === 'up') {
-      setTitleText('Do!');
+    if(swipeType === 'up') {
+      if(page === PAGES.HOME) setTitleText('Do!');
+      if(page === PAGES.CALENDAR) setTitleText('Calendar!');
+      if(page === PAGES.HISTORY) setTitleText('History!');
       setIsControlBox(false);
+    }
+    if(swipeType === 'right' && page === PAGES.HOME) {
+      setPage(PAGES.CALENDAR);
+      setTitleText('Calendar!');
+    }
+    if(swipeType === 'left' && page === PAGES.HOME) {
+      setPage(PAGES.HISTORY);
+      setTitleText('History!');
+    }
+    if(swipeType === 'left' && page === PAGES.CALENDAR) {
+      setPage(PAGES.HOME);
+      setTitleText('Do!');
+    }
+    if(swipeType === 'right' && page === PAGES.HISTORY) {
+      setPage(PAGES.HOME);
+      setTitleText('Do!');
     }
   }
   return (
@@ -69,7 +91,7 @@ const MainHeader = () => {
         <div onClick={handleFlagClick} name='none'></div>
       </Style.FlagContainer>
       <h1>{titleText}</h1>
-      <span>{`${year}.${returnMonth()}.${retunrDate()}(${week})`}</span>
+      <span>{`${year}.${returnMonth()}.${retunrDate()} (${week})`}</span>
       <Style.ControlContainer $isActive={isControlBox}>
         <SortController name="sortList" />
         <FontSizeController />
