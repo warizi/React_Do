@@ -2,8 +2,8 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import ListItem from "../ListItem/ListItem";
 import Style from "./MainDo.style";
 import todoListState from "../../states/todoListState";
-import { useEffect, useRef } from "react";
-import { createId, getStorage, setStorage } from "../../utils/Storage.js";
+import React, { useEffect, useRef } from "react";
+import { getStorage, setStorage } from "../../utils/Storage.js";
 import { doList } from "../../states/doListSelector";
 import { doneList } from "../../states/doneListSelector";
 import toolsState from "../../states/tools/toolsState";
@@ -14,7 +14,10 @@ import { handleDragEnd } from "../../utils/handleDragEnd";
 import fontSizeState from "../../states/font/fontSizeState";
 import pageState from "../../states/page/pageState";
 import { PAGES } from "../../constants/PAGES";
-import { TODO_LIST_KEY } from "../../constants/KEY";
+import { createIndexedDB, deleteIndexedDB, readIndexedDB, updateIndexedDB } from "../../api/indexedDB/IndexedDbAPI";
+import { DO_LIST, HISTORY_LIST } from "../../constants/indexedDBObjectName";
+import { convertDB } from "../../utils/convertDB";
+import DnDState from "../../states/DnDState/DnDState";
 
 
 
@@ -25,6 +28,7 @@ const MainDo = () => {
   const [ selectedTool, setSelectTool ] = useRecoilState(toolsState);
   const [ selectedFlag, setSelectedFlag ] = useRecoilState(colorFlagState);
   const [ fontsize, setFontsize ] = useRecoilState(fontSizeState);
+  const [ stateOfDnD, setStateOfDnD ] = useRecoilState(DnDState);
   const page = useRecoilValue(pageState);
   const inputRef = useRef(null);
   const today = new Date();
@@ -41,55 +45,123 @@ const MainDo = () => {
     if(year === anotherYear && month === anotherMonth && day === anotherDay) return true;
     return false;
   }
-
-  const updateDateList = () => {
-    const list = getStorage(TODO_LIST_KEY);
-    const todoList = list.map((item) => {
-      item.date = today;
-      return item;
-    });
-    setStorage(TODO_LIST_KEY, todoList);
-    setTodoList(todoList);
+  const updateDateList = async () => {
+    const objectStore = await readIndexedDB(DO_LIST);
+    const getAllReq = objectStore.getAll();
+    getAllReq.onsuccess = (event) => {
+      const list = event.target.result;
+      list.forEach( async (item) => {
+        if(isSameDate(item.date)) return;
+        const objectStore = await updateIndexedDB(DO_LIST);
+        const putReq = objectStore.put({
+          id: item.id,
+          content: item.content,
+          checked: item.checked,
+          highlight: item.highlight,
+          date: today,
+        });
+      });
+    }
   }
 
-  const deleteDoneList = () => {
-    const list = getStorage(TODO_LIST_KEY);
-    const newList = list.filter((item) => {
-      if(item.checked === true && !isSameDate(item.date)) return false;
-      return true;
-    });
-    setStorage(TODO_LIST_KEY, newList);
-    setTodoList(newList);
+  const deleteDoneList = async () => {
+    const objectStore = await readIndexedDB(DO_LIST);
+    const getAllReq = objectStore.getAll();
+    let doneList = [];
+    getAllReq.onsuccess = async (event) => {
+      const list = event.target.result;
+      const newList = list.filter((item) => {
+        if(item.checked === true && !isSameDate(item.date)) return false;
+        return true;
+      });
+      list.forEach( async (item) => {
+        if(item.checked === false) return;
+        if(isSameDate(item.date)) return;
+        const objectStore = await deleteIndexedDB(DO_LIST);
+        const deleteReq = objectStore.delete(item.id);
+        doneList.push(item);
+        deleteReq.onsuccess = () => {
+          const dndList = getStorage('dndList');
+          const newDnDList = dndList.filter((id) => {
+            if(id === item.id) return false;
+            return true;
+          });
+          setStorage('dndList', newDnDList);
+          setStateOfDnD(newDnDList);
+        }
+      });
+      setTodoList(newList);
+
+      if(doneList.length === 0) return;
+      const objectStore = await createIndexedDB(HISTORY_LIST);
+      const addReq = objectStore.add({
+        date: today,
+        list: doneList,
+      });
+    }
   }
   const initFontSizes = () => {
     if(getStorage('fontSize').length === 0) setStorage('fontSize', 16);
     setFontsize(getStorage('fontSize'));
   }
+
+  const initDnDState = async () => {
+    const objectStore = await readIndexedDB(DO_LIST);
+    const getAllReq = objectStore.getAll();
+    // TODO: 버그 위험 많음
+    getAllReq.onsuccess = (event) => {
+      const list = event.target.result;
+      if(list.length === 0) {
+        setStateOfDnD([]);
+        setStorage('dndList', []);
+        return;
+      }
+      // TODO: list.length와 dndList.length가 다를 때 
+      if(getStorage('dndList').length !== 0) return setStateOfDnD(getStorage('dndList'));
+      const dndList = [];
+      list.forEach((item) => {
+        dndList.push(item.id);
+      });
+      setStateOfDnD(dndList);
+      setStorage('dndList', dndList);
+    }
+  }
   useEffect(() => {
+    initDnDState();
+    convertDB(setTodoList);
     initFontSizes();
     deleteDoneList();
     updateDateList();
   }, []);
 
-  // useEffect(() => {
-  //   if(selectedTool === 'pen') inputRef.current.focus();
-  // }, [selectedTool]);
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const contentValue = event.target[0].value;
     const highlightColor = convertColor();
-    const newListItem = {
-      id: createId(TODO_LIST_KEY),
+    event.target[0].value = '';
+
+    const newItem = {
       content: contentValue,
       checked: false,
       highlight: highlightColor,
       date: today,
     }
-    event.target[0].value = '';
-    const newTodoList = [...todoList, newListItem];
-    setStorage(TODO_LIST_KEY, newTodoList);
-    setTodoList(newTodoList);
+    const objectStore = await createIndexedDB(DO_LIST);
+    const addReq = objectStore.add(newItem);
+    
+    addReq.onsuccess = async (event) => {
+      const newIndex = event.target.result;
+      const objectStore = await readIndexedDB(DO_LIST);
+      const getAllReq = objectStore.getAll();
+      getAllReq.onsuccess = (event) => {
+        const list = event.target.result;
+        setTodoList(list);
+      }
+      const dndList = getStorage('dndList');
+      dndList.push(newIndex);
+      setStorage('dndList', dndList);
+      setStateOfDnD(dndList);
+    }
   }
   const convertColor = () => {
     if(selectedFlag === 'none') return 'none';
@@ -124,7 +196,7 @@ const MainDo = () => {
         <input id="input" ref={inputRef} type="text" />
         <button>추가</button>
       </Style.InputContainer>
-      <DragDropContext onDragEnd={(result) => handleDragEnd(result, selectedFlag, todoList, setTodoList)}>
+      <DragDropContext onDragEnd={(result) => handleDragEnd(result, selectedFlag, todoList, setTodoList, stateOfDnD, setStateOfDnD)}>
         <Style.ListContainer>
           <Droppable droppableId="doList">
             {(provided) => (

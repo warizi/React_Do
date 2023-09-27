@@ -41,13 +41,15 @@ const Cotnainer = styled.div`
 
   & textarea {
     width: calc(100% - 30px);
+    padding: 5px;
+    border-radius: 10px;
+    background-color: ${({ $highlight }) => $highlight ? $highlight : 'none' };
     font-size: ${({ $fontSize }) => `${$fontSize}px` };
     border: none;
     resize: none;
     height: auto;
     overflow: hidden;
     outline: none;
-    background-color: #FFFDF6;
   }
 `;
 

@@ -1,25 +1,55 @@
 import { COLOR } from "../styles/COLOR";
-import { getStorage, setStorage } from "./Storage";
+import { setStorage } from "./Storage";
 
 
-export const handleDragEnd = (
+export const handleDragEnd = async (
     { destination, draggableId, source }, 
     selectedFlag, 
     todoList, 
-    setTodoList 
+    setTodoList,
+    stateOfDnD,
+    setStateOfDnD,
   ) => {
     
   if(!destination) return;
   const startIndex = source.index;
   const endIndex = destination.index;
-  const list = getStorage('todoList');
-  
+  const list = todoList;
+  const DnDList = [...stateOfDnD];
+
   if(source.droppableId === destination.droppableId && startIndex === endIndex) return;
   
+  // TODO: list => dndList 컨버팅 함수 리펙토링
+  const doList = list.filter((item) => item.checked === false);
+  const doDnDList = [];
+  DnDList.forEach((DnDId) => {
+    const targetItem = doList.find((item) => item.id === DnDId);
+    if(targetItem) doDnDList.push(targetItem);
+  });
   const redList = list.filter((item) => item.highlight === COLOR.HLred);
+  const redDnDList = [];
+  DnDList.forEach((DnDId) => {
+    const targetItem = redList.find((item) => item.id === DnDId);
+    if(targetItem) redDnDList.push(targetItem);
+  });
   const yellowList = list.filter((item) => item.highlight === COLOR.HLyellow);
+  const yellowDnDList = [];
+  DnDList.forEach((DnDId) => {
+    const targetItem = yellowList.find((item) => item.id === DnDId);
+    if(targetItem) yellowDnDList.push(targetItem);
+  });
   const greenList = list.filter((item) => item.highlight === COLOR.HLGreen);
+  const greenDnDList = [];
+  DnDList.forEach((DnDId) => {
+    const targetItem = greenList.find((item) => item.id === DnDId);
+    if(targetItem) greenDnDList.push(targetItem);
+  });
   const blueList = list.filter((item) => item.highlight === COLOR.HLBlue);
+  const blueDnDList = [];
+  DnDList.forEach((DnDId) => {
+    const targetItem = blueList.find((item) => item.id === DnDId);
+    if(targetItem) blueDnDList.push(targetItem);
+  });
 
   const red = COLOR.HLNormalRed;
   const yellow = COLOR.HLNormalYellow;
@@ -28,37 +58,34 @@ export const handleDragEnd = (
   const none = 'none';
   
   const itemId = Number(draggableId);
-  const itemIndex = list.findIndex((item) => item.id === itemId);
+  const itemIndex = DnDList.findIndex((item) => item === itemId);
   
-  const [ removed ] = list.slice(itemIndex, itemIndex + 1);
+  const [ removed ] = DnDList.slice(itemIndex, itemIndex + 1);
 
-  const setNewList = (colorList) => {
-    const targetItem = colorList[endIndex];
-    const targetRealIndex = list.findIndex((item) => item.id === targetItem.id) - 1;
-    list.splice(itemIndex, 1);
-    list.splice(targetRealIndex + 1, 0, removed);
-    setStorage('todoList', list);
-    setTodoList(list);
+  const setNewList = (filteredList) => {
+    const targetItem = filteredList[endIndex];
+    const targetRealIndex = DnDList.findIndex((item) => item === targetItem.id);
+    DnDList.splice(itemIndex, 1);
+    DnDList.splice(targetRealIndex, 0, removed);
+    setStateOfDnD(DnDList);
+    setStorage('dndList', DnDList);
   }
 
   switch (selectedFlag) {
     case red:
-      setNewList(redList);
+      setNewList(redDnDList);
       break;
     case yellow:
-      setNewList(yellowList);
+      setNewList(yellowDnDList);
       break;
     case green:
-      setNewList(greenList);
+      setNewList(greenDnDList);
       break;
     case blue:
-      setNewList(blueList);
+      setNewList(blueDnDList);
       break;
     case none:
-      list.splice(itemIndex, 1);
-      list.splice(endIndex, 0, removed);
-      setStorage('todoList', list);
-      setTodoList(list);
+      setNewList(doDnDList);
       break;
     default:
       break;

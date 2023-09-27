@@ -57,6 +57,7 @@ const MainHeader = () => {
       if(page === PAGES.HISTORY) setTitleText('History!');
       setIsControlBox(false);
     }
+    if(titleText === 'Setting!') return;
     if(swipeType === 'right' && page === PAGES.HOME) {
       setPage(PAGES.CALENDAR);
       setTitleText('Calendar!');
