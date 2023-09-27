@@ -7,9 +7,9 @@ const MainBody = () => {
   const page = useRecoilValue(pageState);
   return (
     <Style.Container $page={page}>
-      <Style.CalendarContainer />
-      <MainDo />
-      <Style.HistoryContainer />
+      {
+        page === 'home' ? <MainDo /> : <></>
+      }
     </Style.Container>
   )
 }

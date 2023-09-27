@@ -2,50 +2,81 @@ import { useEffect, useRef, useState } from 'react';
 import Style from './ListItem.style';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import todoListState from '../../states/todoListState';
-import { getStorage, setStorage } from '../../utils/Storage';
 import toolsState from '../../states/tools/toolsState';
 import colorState from '../../states/color/colorHLState';
-
-const TODO_LIST_KEY = 'todoList';
+import { deleteIndexedDB, readIndexedDB, updateIndexedDB } from '../../api/indexedDB/IndexedDbAPI';
+import { DO_LIST } from '../../constants/indexedDBObjectName';
+import { getStorage, setStorage } from '../../utils/Storage';
+import DnDState from '../../states/DnDState/DnDState';
 
 const ListItem = ({ content, checked, id, highlight, fontSize }) => {
   const [ todoList, setTodoList ] = useRecoilState(todoListState);
   const highlightColor = useRecoilValue(colorState);
   const [ contentValue, setContentValue ] = useState(content);
+  const [ highlightColorValue, setHighlightColorValue ] = useState(highlight);
   const [ isUpdate, setIsUpdate ] = useState(false);
+  const [ stateOfDnD, setStateOfDnD ] = useRecoilState(DnDState);
   const selectedTool = useRecoilValue(toolsState);
   const textArea = useRef(null);
 
-  const handleCheckBoxClick = (id) => {
-    const list = getStorage(TODO_LIST_KEY);
-    const itemIndex = list.findIndex((item) => item.id === id);
-    if(itemIndex === -1) return;
-    list[itemIndex].checked = !list[itemIndex].checked;
-
-    const noneCheckedList = list.filter((item) => item.checked === false);
-    const checkedList = list.filter((item) => item.checked === true);
-    const newOrderedList = [...noneCheckedList, ...checkedList];
-    setStorage(TODO_LIST_KEY, newOrderedList);
-    setTodoList(newOrderedList);
+  const handleCheckBoxClick = async (id) => {
+    const objectStore = await updateIndexedDB(DO_LIST);
+    const putReq = objectStore.put({
+      id: id,
+      content: contentValue,
+      checked: !checked,
+      highlight: highlightColorValue,
+      date: new Date(),
+    });
+    putReq.onsuccess = (event) => {
+      const updatedId = event.target.result;
+      const updatedTodoList = todoList.map((item) => {
+        if(item.id === updatedId) {
+          return {...item, checked: !checked};
+        }
+        return item;
+      });
+      setTodoList(updatedTodoList);
+    }
   }
 
-  const handleDeleteButtonClick = (id) => {
-    const list = getStorage(TODO_LIST_KEY);
-    const sameIdIndex = list.findIndex((item) => item.id === id);
-    if(sameIdIndex === -1) return;
-    list.splice(sameIdIndex, 1);
-    setStorage(TODO_LIST_KEY, list);
-    setTodoList(list);
+  const handleDeleteButtonClick = async (id) => {
+    const objectStore = await deleteIndexedDB(DO_LIST);
+    const deleteReq = objectStore.delete(id);
+    deleteReq.onsuccess = async (event) => {
+      const objectStore = await readIndexedDB(DO_LIST);
+      const getAllReq = objectStore.getAll();
+      getAllReq.onsuccess = (event) => {
+        const list = event.target.result;
+        setTodoList(list);
+      }
+      const newDnDList = getStorage('dndList').filter((item) => {
+        if(item === id) return false;
+        return true;
+      });
+      setStorage('dndList', newDnDList);
+      setStateOfDnD(newDnDList);
+    }
   }
 
-  const updateItem = () => {
-    setIsUpdate(false);
-    const list = getStorage(TODO_LIST_KEY);
-    const sameIdIndex = list.findIndex((item) => item.id === id);
-    if(sameIdIndex === -1) return;
-    list[sameIdIndex].content = contentValue;
-    setStorage(TODO_LIST_KEY, list);
-    setTodoList(list);
+  const updateItem = async () => {
+    const objectStore = await updateIndexedDB(DO_LIST);
+    const putReq = objectStore.put({
+      id: id,
+      content: contentValue,
+      checked: checked,
+      highlight: highlightColorValue,
+      date: new Date(),
+    });
+    putReq.onsuccess = async () => {
+      const objectStore = await readIndexedDB(DO_LIST);
+      const getAllReq = objectStore.getAll();
+      getAllReq.onsuccess = (event) => {
+        const list = event.target.result;
+        setTodoList(list);
+      }
+      setIsUpdate(false);
+    }
   }
 
   const handleTextAreaEnter = (event) => {
@@ -59,20 +90,29 @@ const ListItem = ({ content, checked, id, highlight, fontSize }) => {
     setContentValue(event.target.value);
   }
 
-  const handleHighLight = () => {
+  const handleHighLight = async () => {
     if(selectedTool !== 'highlighter') return;
-    const list = getStorage(TODO_LIST_KEY);
-    const sameIdIndex = list.findIndex((item) => item.id === id);
-    if(sameIdIndex === -1) return;
-    if(list[sameIdIndex].highlight === highlightColor) {
-      list[sameIdIndex].highlight = 'none';
-      setStorage(TODO_LIST_KEY, list);
-      setTodoList(list);
-      return;
+    const objectStore = await updateIndexedDB(DO_LIST);
+    let updateHighlightColor = highlightColor;
+    if(highlightColorValue === highlightColor) updateHighlightColor = 'none';
+
+    const putReq = objectStore.put({
+      id: id,
+      content: contentValue,
+      checked: checked,
+      highlight: updateHighlightColor,
+      date: new Date(),
+    });
+
+    putReq.onsuccess = async () => {
+      const objectStore = await readIndexedDB(DO_LIST);
+      const getAllReq = objectStore.getAll();
+      getAllReq.onsuccess = (event) => {
+        const list = event.target.result;
+        setTodoList(list);
+      }
+      setHighlightColorValue(updateHighlightColor);
     }
-    list[sameIdIndex].highlight = highlightColor;
-    setStorage(TODO_LIST_KEY, list);
-    setTodoList(list);
   }
   
   const resizeTextArea = () => {
@@ -98,7 +138,7 @@ const ListItem = ({ content, checked, id, highlight, fontSize }) => {
     <>
       <Style.CancelBackground onClick={focusOut} $isUpdate={isUpdate}></Style.CancelBackground>
       <Style.Cotnainer 
-        $highlight={highlight} 
+        $highlight={highlightColorValue} 
         $checked={checked} 
         $isUpdate={isUpdate}
         $fontSize={fontSize}

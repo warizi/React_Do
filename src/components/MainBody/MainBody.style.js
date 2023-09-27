@@ -7,15 +7,15 @@ const Container = styled.div`
   width: 300vw;
   height: calc(100vh - 245px);
   overflow: hidden;
-  transition: 0.2s;
+  /* transition: 0.2s;
   transform: ${({ $page }) => {
     switch($page) {
       case 'calendar': return 'translateX(0)';
-      case 'home': return 'translateX(-100vw)';
+      case 'home': return 'translateX(-50vw)';
       case 'history': return 'translateX(-200vw)';
       default: return;
     }
-  }};
+  }}; */
 `;
 const CalendarContainer = styled.div`
   width: 100vw;

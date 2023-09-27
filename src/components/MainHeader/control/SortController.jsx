@@ -6,20 +6,31 @@ import { getStorage, setStorage } from '../../../utils/Storage';
 import { Droppable } from 'react-beautiful-dnd';
 import { Draggable } from 'react-beautiful-dnd';
 import { DragDropContext } from 'react-beautiful-dnd';
+import DnDState from '../../../states/DnDState/DnDState';
 
 const SortController = () => {
   const [ todoList, setTodoList ] = useRecoilState(todoListState);
   const [ sortList, setSortList ] = useRecoilState(sortListState);
+  const [ dndList, setDnDList ] = useRecoilState(DnDState);
   
   const handleSortList = (event) => {
     let newList = [];
-    const list = getStorage('todoList');
+    let newDnDList = [];
+    const list = [...todoList];
+    const dndList = getStorage('dndList');
     for(let i = 0; i < sortList.length; i++) {
       const filteredList = list.filter((item)=> item.highlight === sortList[i].COLOR);
       newList = [...newList, ...filteredList]; 
     }
-    setStorage('todoList', newList);
+    newList.forEach((item) => {
+      if(dndList.includes(item.id)) {
+        newDnDList.push(item.id);
+      }
+    });
+    setStorage('dndList', newDnDList);
+    setDnDList(newDnDList);
     setTodoList(newList);
+    alert('적용되었습니다.');
   }
 
   const handleDragEnd = ({destination, draggableId, source}) => {
