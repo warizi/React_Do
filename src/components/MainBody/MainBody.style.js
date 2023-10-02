@@ -5,25 +5,16 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   width: 300vw;
-  height: calc(100vh - 245px);
+  height: calc(100vh - 210px);
   overflow: hidden;
-  /* transition: 0.2s;
-  transform: ${({ $page }) => {
-    switch($page) {
-      case 'calendar': return 'translateX(0)';
-      case 'home': return 'translateX(-50vw)';
-      case 'history': return 'translateX(-200vw)';
-      default: return;
-    }
-  }}; */
 `;
 const CalendarContainer = styled.div`
   width: 100vw;
-  height: calc(100vh - 245px);
+  height: calc(100vh - 210px);
 `;
 const HistoryContainer = styled.div`
   width: 100vw;
-  height: calc(100vh - 245px);
+  height: calc(100vh - 210px);
 `;
 export default {
   Container,

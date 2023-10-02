@@ -16,10 +16,8 @@ import pageState from "../../states/page/pageState";
 import { PAGES } from "../../constants/PAGES";
 import { createIndexedDB, deleteIndexedDB, readIndexedDB, updateIndexedDB } from "../../api/indexedDB/IndexedDbAPI";
 import { DO_LIST, HISTORY_LIST } from "../../constants/indexedDBObjectName";
-import { convertDB } from "../../utils/convertDB";
 import DnDState from "../../states/DnDState/DnDState";
-
-
+import { isSameDate } from "../../utils/isSameDate";
 
 const MainDo = () => {
   const [ todoList, setTodoList ] = useRecoilState(todoListState);
@@ -33,54 +31,24 @@ const MainDo = () => {
   const inputRef = useRef(null);
   const today = new Date();
 
-  const isSameDate = (date) => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
-    const anotherDate = new Date(date);
-    const anotherYear = anotherDate.getFullYear();
-    const anotherMonth = anotherDate.getMonth() + 1;
-    const anotherDay = anotherDate.getDate();
-    if(year === anotherYear && month === anotherMonth && day === anotherDay) return true;
-    return false;
-  }
-  const updateDateList = async () => {
-    const objectStore = await readIndexedDB(DO_LIST);
-    const getAllReq = objectStore.getAll();
-    getAllReq.onsuccess = (event) => {
-      const list = event.target.result;
-      list.forEach( async (item) => {
-        if(isSameDate(item.date)) return;
-        const objectStore = await updateIndexedDB(DO_LIST);
-        const putReq = objectStore.put({
-          id: item.id,
-          content: item.content,
-          checked: item.checked,
-          highlight: item.highlight,
-          date: today,
-        });
-      });
-    }
-  }
-
   const deleteDoneList = async () => {
     const objectStore = await readIndexedDB(DO_LIST);
     const getAllReq = objectStore.getAll();
     let doneList = [];
+
     getAllReq.onsuccess = async (event) => {
       const list = event.target.result;
       const newList = list.filter((item) => {
         if(item.checked === true && !isSameDate(item.date)) return false;
         return true;
       });
+  
       list.forEach( async (item) => {
         if(item.checked === false) return;
         if(isSameDate(item.date)) return;
         const objectStore = await deleteIndexedDB(DO_LIST);
         const deleteReq = objectStore.delete(item.id);
-        doneList.push(item);
-        deleteReq.onsuccess = () => {
+        deleteReq.onsuccess = async () => {
           const dndList = getStorage('dndList');
           const newDnDList = dndList.filter((id) => {
             if(id === item.id) return false;
@@ -90,16 +58,24 @@ const MainDo = () => {
           setStateOfDnD(newDnDList);
         }
       });
+      let doneDate;
+      list.forEach((item) => {
+        if(item.checked === false) return;
+        if(isSameDate(item.date)) return;
+        doneList.push(item);
+        doneDate = item.date;
+      })
       setTodoList(newList);
-
+      
       if(doneList.length === 0) return;
       const objectStore = await createIndexedDB(HISTORY_LIST);
       const addReq = objectStore.add({
-        date: today,
+        date: doneDate,
         list: doneList,
       });
     }
   }
+
   const initFontSizes = () => {
     if(getStorage('fontSize').length === 0) setStorage('fontSize', 16);
     setFontsize(getStorage('fontSize'));
@@ -108,7 +84,6 @@ const MainDo = () => {
   const initDnDState = async () => {
     const objectStore = await readIndexedDB(DO_LIST);
     const getAllReq = objectStore.getAll();
-    // TODO: 버그 위험 많음
     getAllReq.onsuccess = (event) => {
       const list = event.target.result;
       if(list.length === 0) {
@@ -128,10 +103,8 @@ const MainDo = () => {
   }
   useEffect(() => {
     initDnDState();
-    convertDB(setTodoList);
     initFontSizes();
     deleteDoneList();
-    updateDateList();
   }, []);
 
   const handleSubmit = async (event) => {
@@ -163,6 +136,7 @@ const MainDo = () => {
       setStateOfDnD(dndList);
     }
   }
+
   const convertColor = () => {
     if(selectedFlag === 'none') return 'none';
     if(selectedFlag === COLOR.HLNormalRed) return COLOR.HLred;
@@ -198,6 +172,7 @@ const MainDo = () => {
       </Style.InputContainer>
       <DragDropContext onDragEnd={(result) => handleDragEnd(result, selectedFlag, todoList, setTodoList, stateOfDnD, setStateOfDnD)}>
         <Style.ListContainer>
+          <Style.MarginTop /> 
           <Droppable droppableId="doList">
             {(provided) => (
               <div ref={provided.innerRef} {...provided.droppableProps}>
@@ -228,6 +203,7 @@ const MainDo = () => {
             return <ListItem key={id} highlight={highlight} content={content} checked={checked} id={id} fontSize={fontsize}/>
           })
         }
+        <Style.MarginBottom /> 
         </Style.ListContainer>
       </DragDropContext>
     </Style.Container>

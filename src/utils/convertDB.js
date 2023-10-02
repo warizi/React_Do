@@ -3,7 +3,7 @@ import { TODO_LIST_KEY } from "../constants/KEY"
 import { DO_LIST } from "../constants/indexedDBObjectName";
 import { getStorage, setStorage } from "./Storage"
 
-export const convertDB = async (setTodoList) => {
+export const convertDB = async () => {
   const prevList = getStorage(TODO_LIST_KEY);
   if(!prevList.length && prevList.length === 0) return;
   const deletedIdList = prevList.map((item) => {
@@ -14,7 +14,6 @@ export const convertDB = async (setTodoList) => {
     const objectStore = await createIndexedDB(DO_LIST);
     const request = objectStore.add(item);
   });
-  setTodoList(deletedIdList);
   setStorage('backup', prevList);
   setStorage(TODO_LIST_KEY, '');
 }

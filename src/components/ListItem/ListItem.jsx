@@ -8,6 +8,7 @@ import { deleteIndexedDB, readIndexedDB, updateIndexedDB } from '../../api/index
 import { DO_LIST } from '../../constants/indexedDBObjectName';
 import { getStorage, setStorage } from '../../utils/Storage';
 import DnDState from '../../states/DnDState/DnDState';
+import darkMode from '../../states/darkMode/darkMode';
 
 const ListItem = ({ content, checked, id, highlight, fontSize }) => {
   const [ todoList, setTodoList ] = useRecoilState(todoListState);
@@ -16,6 +17,7 @@ const ListItem = ({ content, checked, id, highlight, fontSize }) => {
   const [ highlightColorValue, setHighlightColorValue ] = useState(highlight);
   const [ isUpdate, setIsUpdate ] = useState(false);
   const [ stateOfDnD, setStateOfDnD ] = useRecoilState(DnDState);
+  const [ isDarkMode, setIsDarkMode ] = useRecoilState(darkMode);
   const selectedTool = useRecoilValue(toolsState);
   const textArea = useRef(null);
 
@@ -28,15 +30,13 @@ const ListItem = ({ content, checked, id, highlight, fontSize }) => {
       highlight: highlightColorValue,
       date: new Date(),
     });
-    putReq.onsuccess = (event) => {
-      const updatedId = event.target.result;
-      const updatedTodoList = todoList.map((item) => {
-        if(item.id === updatedId) {
-          return {...item, checked: !checked};
-        }
-        return item;
-      });
-      setTodoList(updatedTodoList);
+    putReq.onsuccess = async (event) => {
+      const objectStore = await readIndexedDB(DO_LIST);
+      const getAllReq = objectStore.getAll();
+      getAllReq.onsuccess = (event) => {
+        const list = event.target.result;
+        setTodoList(list);
+      }
     }
   }
 
@@ -142,9 +142,10 @@ const ListItem = ({ content, checked, id, highlight, fontSize }) => {
         $checked={checked} 
         $isUpdate={isUpdate}
         $fontSize={fontSize}
+        $isDarkMode={isDarkMode}
         onClick={activeUpdate}
       >
-        <Style.CheckBox $fontSize={fontSize} $checked={checked} onClick={() => handleCheckBoxClick(id)}>
+        <Style.CheckBox $isDarkMode={isDarkMode} $fontSize={fontSize} $checked={checked} onClick={() => handleCheckBoxClick(id)}>
           <div></div>
         </Style.CheckBox>
         {
@@ -164,6 +165,7 @@ const ListItem = ({ content, checked, id, highlight, fontSize }) => {
           삭제
         </Style.DeleteButton>
       </Style.Cotnainer>
+      <Style.MarginBottom/>
     </>
   );
 };

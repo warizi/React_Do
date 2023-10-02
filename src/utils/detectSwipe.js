@@ -1,4 +1,4 @@
-const SWIPE_LENGTH = 50;
+const SWIPE_LENGTH = 80;
 const SWIPE_TIEMR = 400;
 
 const detectSwipe = (event, offset, setOffset) => {

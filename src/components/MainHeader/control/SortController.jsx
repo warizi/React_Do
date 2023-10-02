@@ -7,11 +7,13 @@ import { Droppable } from 'react-beautiful-dnd';
 import { Draggable } from 'react-beautiful-dnd';
 import { DragDropContext } from 'react-beautiful-dnd';
 import DnDState from '../../../states/DnDState/DnDState';
+import darkMode from '../../../states/darkMode/darkMode';
 
-const SortController = () => {
+const SortController = ({ isActive }) => {
   const [ todoList, setTodoList ] = useRecoilState(todoListState);
   const [ sortList, setSortList ] = useRecoilState(sortListState);
   const [ dndList, setDnDList ] = useRecoilState(DnDState);
+  const [ isDarkMode, setIsDarkMode ] = useRecoilState(darkMode);
   
   const handleSortList = (event) => {
     let newList = [];
@@ -43,7 +45,7 @@ const SortController = () => {
   }
 
   return (
-    <Style.Container>
+    <Style.Container $isDarkMode={isDarkMode} $isActive={isActive}>
       <h3>카테고리 정렬</h3>
       <DragDropContext onDragEnd={(result) => handleDragEnd(result)}>
         <Droppable droppableId='sortList'>
