@@ -1,7 +1,7 @@
 
 export const COLOR = {
-  background: '#FFFDF6',
-  black: '#464646',
+  background: '#FFF',
+  black: 'rgb(40, 40, 40)',
   gray: '#9d9d9d',
   red: '#FF4d4d',
   white: '#d9d9d9',

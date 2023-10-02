@@ -15,14 +15,16 @@ const Cotnainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 100%;
+  width: calc(100% - 10px);
   min-height: 30px;
-  border-bottom: 1px dashed #000;
   padding: 8px 10px;
   gap: 10px;
   transition: 0.2s;
   overflow: hidden;
-  background-color: ${COLOR.background};
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  background-color: ${({ $isDarkMode }) => $isDarkMode ? COLOR.black : COLOR.background };
   transform: ${({ $isUpdate }) => $isUpdate ? 'translateY(-10px)' : 'none' };
   ${({ $isUpdate }) => $isUpdate ? 'box-shadow: 0 20px 10px rgba(0, 0, 0, 0.3)' : '' };
   ${({ $isUpdate }) => $isUpdate ? 'z-index: 1205' : 'z-index: 1200' };
@@ -31,8 +33,8 @@ const Cotnainer = styled.div`
     position: relative;
     padding: 5px;
     background-color: ${({ $highlight }) => $highlight ? $highlight : 'none' };
-    color: ${({ $checked }) => $checked ? '#9d9d9d' : '#000' };
-    width: calc(100% - 30px);
+    color: ${({ $checked, $isDarkMode }) => $checked ? '#9d9d9d' : $isDarkMode ? 'white' : COLOR.black };
+    width: calc(100% - 40px);
     word-wrap: break-word;
     font-size: ${({ $fontSize }) => `${$fontSize}px` };
     text-decoration: ${({ $checked }) => $checked ? 'line-through' : 'none' };
@@ -43,13 +45,14 @@ const Cotnainer = styled.div`
     width: calc(100% - 30px);
     padding: 5px;
     border-radius: 10px;
-    background-color: ${({ $highlight }) => $highlight ? $highlight : 'none' };
+    background-color: ${({ $highlight }) => $highlight ? $highlight : '#FFF' };
     font-size: ${({ $fontSize }) => `${$fontSize}px` };
     border: none;
     resize: none;
     height: auto;
     overflow: hidden;
     outline: none;
+    color: ${({ $isDarkMode }) => $isDarkMode ? 'white' : COLOR.black };
   }
 `;
 
@@ -60,6 +63,7 @@ const CheckBox = styled.div`
   border: ${({ $fontSize }) => getCheckboxSizeFromFontSize($fontSize).border} solid ${({ $checked }) => $checked ? '#d9d9d9' : '#000' };
   border-radius: ${({ $fontSize }) => getCheckboxSizeFromFontSize($fontSize).radius};
   background-color: rgba(0, 0, 0, 0);
+  border-color: ${({ $isDarkMode, $checked }) => $isDarkMode ? $checked ? 'rgb(100, 100, 100)' : 'rgb(120, 120, 120)' : $checked ? '#d9d9d9' : '#000' };
   cursor: pointer;
 
   & div {
@@ -70,14 +74,14 @@ const CheckBox = styled.div`
     transform: translate(-50%, -50%);
     width: 80%;
     height: 80%;
-    background-color: ${({ $checked }) => $checked ? '#d9d9d9' : '#000' };
+    background-color: ${({ $checked, $isDarkMode }) => $checked ? $isDarkMode? 'rgb(100, 100, 100)' : '#d9d9d9' : '#000' };
     border-radius: 5px;
   }
 `;
 
 const DeleteButton = styled.button`
   position: absolute;
-  transition: 0.2s;
+  transition: 0.3s;
   top: 50%;
   right: ${({ $active }) => $active === 'eraser' ? '1px' : '-60px'};
   transform: translateY(-50%);
@@ -102,10 +106,16 @@ const CancelBackground = styled.div`
   height: 100%;
   z-index: 1201;
 `;
+
+const MarginBottom = styled.div`
+  width: 100%;
+  height: 5px;
+`;
 // eslint-disable-next-line
 export default {
   Cotnainer,
   CheckBox,
   DeleteButton,
   CancelBackground,
+  MarginBottom,
 }

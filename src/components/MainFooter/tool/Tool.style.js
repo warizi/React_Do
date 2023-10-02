@@ -1,39 +1,47 @@
 import { styled } from "styled-components";
 import { COLOR } from "../../../styles/COLOR";
 
-const ANIMATION_TIME = 0.1;
+const ANIMATION_TIME = 0.2;
 
 const Container = styled.div`
   position: relative;
-  width: 64px;
-  height: 121px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
   cursor: pointer;
+  background-color: ${({ $isDarkMode }) => $isDarkMode ? COLOR.black : COLOR.background};
+  transition: 0.2s;
+
+  ${({ $selected }) => {
+  return $selected ?
+  'transform: translateY(-30px);'
+  :
+  ''
+  }}
 
   & img{
-    position: absolute;
-    top: 30px;
+    top: 10px;
     left: 0;
-    width: 64px;
-    height: 121px;
+    width: 25px;
+    height: 40px;
     transition: ${`${ANIMATION_TIME}s`};
-    z-index: 101;
-    ${({ $selected }) => {
-      return $selected ?
-      'transform: translateY(-30px)'
-      :
-      ''
-    }}
+    z-index: 3002;
   }
 
   &::after {
     content: '';
     position: absolute;
     display: ${({ $type }) => $type === 'highlighter' ? 'block' : 'none'};
-    top: 30px;
-    left: 18px;
-    width: 28px;
-    height: 21px;
-    border-radius: 8px 15px 0px 0px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
     background: ${({ $color }) => {
       if($color === COLOR.HLred) return 'rgba(240, 134, 134, 1)' 
       if($color === COLOR.HLBlue) return 'rgba(134, 164, 240, 1)'
@@ -42,12 +50,7 @@ const Container = styled.div`
     }};
     z-index: 102;
     transition: ${`${ANIMATION_TIME}s`};
-    ${({ $selected }) => {
-      return $selected ?
-      'transform: translateY(-30px)'
-      :
-      ''
-    }}
+
   }
 `;
 

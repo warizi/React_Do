@@ -21,10 +21,10 @@ body {
   -webkit-user-select:none;
   -moz-user-select:none;
   -ms-user-select:none;
-  user-select:none
+  user-select:none;
 }
 body {
-  background-color: #FFFDF6;
+  background-color: #FFF;
 }
 li {
   list-style: none;

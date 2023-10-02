@@ -7,11 +7,9 @@ function App() {
   return (
     <BrowserRouter>
       <RecoilRoot>
-        <React.Suspense fallback={<div>Loading...</div>}>
           <Routes>
             <Route path="/" element={<MainPage />} />
           </Routes>
-        </React.Suspense>
       </RecoilRoot>
     </BrowserRouter>
   );

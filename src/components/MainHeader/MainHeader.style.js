@@ -17,7 +17,7 @@ const Container = styled.div`
   }
   & span {
     color: ${({ $isHoliday }) => {
-      if(!$isHoliday) return '#000';
+      if(!$isHoliday) return 'inherit';
       if($isHoliday === 'sun') return '#FF4D4D';
       if($isHoliday === 'sat') return '#86BDF0';
     }};
@@ -56,7 +56,7 @@ const FlagContainer = styled.div`
     height: 50px;
     top: ${({ $active }) => $active ? '60px' : '0'};
     left: 0;
-    transition: 0.2s;
+    transition: 0.25s;
     background-color: ${COLOR.HLNormalLBlue};
     box-shadow: ${({ $active }) => $active ? '0 4px 8px rgba(0, 0, 0, 0.4)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
     ${({ $activeColor }) => $activeColor === COLOR.HLNormalLBlue ? 'z-index: 2002' : 'z-index: 2000'};
@@ -67,7 +67,7 @@ const FlagContainer = styled.div`
     height: 50px;
     top: ${({ $active }) => $active ? '120px' : '0'};
     left: 0;
-    transition: 0.2s;
+    transition: 0.3s;
     background-color: ${COLOR.HLNormalGreen};
     box-shadow: ${({ $active }) => $active ? '0 4px 8px rgba(0, 0, 0, 0.4)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
     ${({ $activeColor }) => $activeColor === COLOR.HLNormalGreen ? 'z-index: 2002' : 'z-index: 2000'};
@@ -78,7 +78,7 @@ const FlagContainer = styled.div`
     height: 50px;
     top: ${({ $active }) => $active ? '180px' : '0'};
     left: 0;
-    transition: 0.2s;
+    transition: 0.35s;
     background-color: ${COLOR.HLNormalYellow};
     box-shadow: ${({ $active }) => $active ? '0 4px 8px rgba(0, 0, 0, 0.4)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
     ${({ $activeColor }) => $activeColor === COLOR.HLNormalYellow ? 'z-index: 2002' : 'z-index: 2000'};
@@ -89,8 +89,8 @@ const FlagContainer = styled.div`
     height: 50px;
     top: ${({ $active }) => $active ? '240px' : '0'};
     left: 0;
-    transition: 0.2s;
-    background-color: ${({  $activeColor }) => $activeColor === 'none' ? '#F3EDD7' : $activeColor};
+    transition: 0.4s;
+    background-color: ${({  $activeColor, $isDarkMode }) => $activeColor === 'none' ? $isDarkMode ? 'rgb(70, 70, 70)' : '#F3EDD7' : $activeColor};
     box-shadow: ${({ $active }) => $active ? '0 4px 8px rgba(0, 0, 0, 0.4)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
     ${({ $activeColor }) => $activeColor === 'none' ? 'z-index: 2003' : 'z-index: 2003'};
   }
@@ -98,22 +98,41 @@ const FlagContainer = styled.div`
 `;
 
 const ControlContainer = styled.div`
-  position: absolute;
+  position: fixed;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  bottom: ${({ $isActive }) => $isActive ? 'calc(-100vh + 245px)' : '0'};
+  grid-template-rows: 170px 120px 160px;
+  grid-template-areas: 
+    'a b' 
+    'a c';
   left: 0;
+  top: 0;
   width: 100%;
-  background-color: ${COLOR.background};
+  background-color: ${({ $isDarkMode }) => $isDarkMode ? 'rgba(0, 0, 0, 0.1)' : '#a0a0a015'};
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-  transition: 0.2s;
-  overflow: hidden;
-  height: ${({ $isActive }) => $isActive ? 'calc(100vh - 245px)' : '0'};
+  transition: 0.3s;
+  overflow: scroll;
+  height: calc(100vh - 90px);
+  padding-top: 105px;
+  z-index: 3000;
+  transform: ${({ $isActive }) => $isActive ? 'translateY(0)' : 'translateY(-110%)'};
+
+  & > div:nth-child(1) {
+    grid-area: a;
+  }
+  & > div:nth-child(2) {
+    grid-area: b;
+  }
+  & > div:nth-child(3) {
+    grid-area: c;
+  }
 `;
 
 // eslint-disable-next-line
 export default {
   Container,
   FlagContainer,
-  ControlContainer
+  ControlContainer,
 }

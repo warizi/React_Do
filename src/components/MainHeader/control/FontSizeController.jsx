@@ -2,9 +2,11 @@ import { useRecoilState } from 'recoil';
 import Style from './FontSizeController.style';
 import fontSizeState from '../../../states/font/fontSizeState';
 import { setStorage } from '../../../utils/Storage';
+import darkMode from '../../../states/darkMode/darkMode';
 
-const FontSizeController = () => {
+const FontSizeController = ({ isActive }) => {
   const [ fontsize, setFontsize ] = useRecoilState(fontSizeState);
+  const [ isDarkMode, setIsDarkMode ] = useRecoilState(darkMode);
 
   const handleFontSize = (event) => {
     event.preventDefault();
@@ -24,7 +26,7 @@ const FontSizeController = () => {
   }
   
   return (
-    <Style.Container $fontSize={fontsize}>
+    <Style.Container $fontSize={fontsize} $isDarkMode={isDarkMode} $isActive={isActive}>
       <h3>글자 크기</h3>
       <p>투두리스트</p>
       <div>{`${fontsize}px`}</div>

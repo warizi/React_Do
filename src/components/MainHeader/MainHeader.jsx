@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Style from './MainHeader.style';
 import { COLOR } from '../../styles/COLOR';
 import { useRecoilState } from 'recoil';
@@ -8,6 +8,10 @@ import SortController from './control/SortController';
 import FontSizeController from './control/FontSizeController';
 import pageState from '../../states/page/pageState';
 import { PAGES } from '../../constants/PAGES';
+import DarkModeController from './control/DarkModeController';
+import darkMode from '../../states/darkMode/darkMode';
+import { getStorage, setStorage } from '../../utils/Storage';
+import settingState from '../../states/setting/settingState';
 
 const DAY_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -18,6 +22,8 @@ const MainHeader = () => {
   const [ activeColor, setActiveColor ] = useRecoilState(colorFlagState);
   const [ titleText, setTitleText ] = useState('Do!');
   const [ page, setPage ] = useRecoilState(pageState);
+  const [ isDarkMode, setIsDarkMode ] = useRecoilState(darkMode);
+  const [ isSetting, setIsSetting ] = useRecoilState(settingState);
 
   const today = new Date();
   const year = today.getFullYear();
@@ -50,12 +56,14 @@ const MainHeader = () => {
     if(swipeType === 'down') {
       setTitleText('Setting!');
       setIsControlBox(true);
+      setIsSetting(true);
     }
     if(swipeType === 'up') {
       if(page === PAGES.HOME) setTitleText('Do!');
       if(page === PAGES.CALENDAR) setTitleText('Calendar!');
       if(page === PAGES.HISTORY) setTitleText('History!');
       setIsControlBox(false);
+      setIsSetting(false);
     }
     if(titleText === 'Setting!') return;
     if(swipeType === 'right' && page === PAGES.HOME) {
@@ -75,6 +83,22 @@ const MainHeader = () => {
       setTitleText('Do!');
     }
   }
+  const initDarkMode = () => {
+    if(!getStorage('darkMode')) setStorage('darkMode', { darkMode: false });
+    setIsDarkMode(getStorage('darkMode').darkMode);
+    if(getStorage('darkMode').darkMode === true) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', 'rgb(40, 40, 40)');
+    }
+  }
+  useEffect(() => {
+    initDarkMode();
+  }, [])
+
+  useEffect(() => {
+    if(page === PAGES.HOME) setTitleText('Do!');
+    if(page === PAGES.CALENDAR) setTitleText('Calendar!');
+    if(page === PAGES.HISTORY) setTitleText('History!');
+  }, [page])
   return (
     <Style.Container 
       $isHoliday={isHoliday()} 
@@ -84,7 +108,12 @@ const MainHeader = () => {
       onMouseLeave={handleSwipe}
       onMouseUp={handleSwipe}
     >
-      <Style.FlagContainer $active={activeFlag} $activeColor={activeColor}>
+      <Style.ControlContainer $isActive={isControlBox} $isDarkMode={isDarkMode}>
+        <SortController name="sortList" isActive={isControlBox} />
+        <FontSizeController isActive={isControlBox} />
+        <DarkModeController isActive={isControlBox} />
+      </Style.ControlContainer>
+      <Style.FlagContainer $active={activeFlag} $activeColor={activeColor} $isDarkMode={isDarkMode}>
         <div onClick={handleFlagClick} name={COLOR.HLNormalRed}></div>
         <div onClick={handleFlagClick} name={COLOR.HLNormalLBlue}></div>
         <div onClick={handleFlagClick} name={COLOR.HLNormalGreen}></div>
@@ -93,10 +122,7 @@ const MainHeader = () => {
       </Style.FlagContainer>
       <h1>{titleText}</h1>
       <span>{`${year}.${returnMonth()}.${retunrDate()} (${week})`}</span>
-      <Style.ControlContainer $isActive={isControlBox}>
-        <SortController name="sortList" />
-        <FontSizeController />
-      </Style.ControlContainer>
+
     </Style.Container>
   )
 }
