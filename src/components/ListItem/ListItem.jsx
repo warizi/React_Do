@@ -136,11 +136,11 @@ const ListItem = ({ content, checked, id, highlight, fontSize }) => {
 
   return (
     <>
-      <Style.CancelBackground onClick={focusOut} $isUpdate={isUpdate}></Style.CancelBackground>
+      <Style.CancelBackground $isDarkMode={isDarkMode} onClick={focusOut} $isUpdate={isUpdate}></Style.CancelBackground>
       <Style.Cotnainer 
         $highlight={highlightColorValue} 
         $checked={checked} 
-        $isUpdate={isUpdate}
+        $isUpdate={isUpdate} 
         $fontSize={fontSize}
         $isDarkMode={isDarkMode}
         onClick={activeUpdate}
@@ -165,7 +165,7 @@ const ListItem = ({ content, checked, id, highlight, fontSize }) => {
           삭제
         </Style.DeleteButton>
       </Style.Cotnainer>
-      <Style.MarginBottom/>
+      <Style.MarginBottom />
     </>
   );
 };

@@ -18,6 +18,7 @@ import { createIndexedDB, deleteIndexedDB, readIndexedDB, updateIndexedDB } from
 import { DO_LIST, HISTORY_LIST } from "../../constants/indexedDBObjectName";
 import DnDState from "../../states/DnDState/DnDState";
 import { isSameDate } from "../../utils/isSameDate";
+import darkMode from "../../states/darkMode/darkMode";
 
 const MainDo = () => {
   const [ todoList, setTodoList ] = useRecoilState(todoListState);
@@ -27,6 +28,7 @@ const MainDo = () => {
   const [ selectedFlag, setSelectedFlag ] = useRecoilState(colorFlagState);
   const [ fontsize, setFontsize ] = useRecoilState(fontSizeState);
   const [ stateOfDnD, setStateOfDnD ] = useRecoilState(DnDState);
+  const [ isDarkMode, setIsDarkMode ] = useRecoilState(darkMode);
   const page = useRecoilValue(pageState);
   const inputRef = useRef(null);
   const today = new Date();
@@ -164,7 +166,7 @@ const MainDo = () => {
 
   return (
     <Style.Container onContextMenu={preventContextMenu}>
-      <Style.CancelBackground $selectedTool={selectedTool} onClick={cancelPen}></Style.CancelBackground>
+      <Style.CancelBackground $isDarkMode={isDarkMode} $selectedTool={selectedTool} onClick={cancelPen}></Style.CancelBackground>
       <Style.InputContainer $tool={isActivePen()} onSubmit={handleSubmit} $fontSize={fontsize}>
         <label htmlFor="input"></label>
         <input id="input" ref={inputRef} type="text" />

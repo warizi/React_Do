@@ -62,7 +62,7 @@ const CancelBackground = styled.div`
   left: 0;
   width: 100vw;
   height: calc(100vh - 210px);
-  background-color: ${COLOR.background};
+  background-color: ${({ $isDarkMode }) => $isDarkMode ? COLOR.black : COLOR.background};
   opacity: 0.5;
   z-index: 1301;
 

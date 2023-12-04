@@ -12,6 +12,8 @@ import DarkModeController from './control/DarkModeController';
 import darkMode from '../../states/darkMode/darkMode';
 import { getStorage, setStorage } from '../../utils/Storage';
 import settingState from '../../states/setting/settingState';
+import { HISTORY_LIST } from '../../constants/indexedDBObjectName';
+import { deleteIndexedDB, readIndexedDB } from '../../api/indexedDB/IndexedDbAPI';
 
 const DAY_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -24,6 +26,7 @@ const MainHeader = () => {
   const [ page, setPage ] = useRecoilState(pageState);
   const [ isDarkMode, setIsDarkMode ] = useRecoilState(darkMode);
   const [ isSetting, setIsSetting ] = useRecoilState(settingState);
+  const [ countDone, setCountDone ] = useState(0);
 
   const today = new Date();
   const year = today.getFullYear();
@@ -90,7 +93,21 @@ const MainHeader = () => {
       document.querySelector('meta[name="theme-color"]').setAttribute('content', 'rgb(40, 40, 40)');
     }
   }
+  const countDoneList = async () => {
+    const objectStore = await readIndexedDB(HISTORY_LIST);
+    const getAllReq = objectStore.getAll();
+
+    getAllReq.onsuccess = (event) => {
+      const list = event.target.result;
+      let count = 0;
+      list.forEach(({list}) => {
+        count = count + list.length;
+      })
+      setCountDone(count);
+    }
+  }
   useEffect(() => {
+    countDoneList();
     initDarkMode();
   }, [])
 
@@ -108,11 +125,6 @@ const MainHeader = () => {
       onMouseLeave={handleSwipe}
       onMouseUp={handleSwipe}
     >
-      <Style.ControlContainer $isActive={isControlBox} $isDarkMode={isDarkMode}>
-        <SortController name="sortList" isActive={isControlBox} />
-        <FontSizeController isActive={isControlBox} />
-        <DarkModeController isActive={isControlBox} />
-      </Style.ControlContainer>
       <Style.FlagContainer $active={activeFlag} $activeColor={activeColor} $isDarkMode={isDarkMode}>
         <div onClick={handleFlagClick} name={COLOR.HLNormalRed}></div>
         <div onClick={handleFlagClick} name={COLOR.HLNormalLBlue}></div>
@@ -123,6 +135,15 @@ const MainHeader = () => {
       <h1>{titleText}</h1>
       <span>{`${year}.${returnMonth()}.${retunrDate()} (${week})`}</span>
 
+      <Style.ControlContainer $isActive={isControlBox} $isDarkMode={isDarkMode}>
+        <SortController name="sortList" isActive={isControlBox} />
+        <FontSizeController isActive={isControlBox} />
+        <DarkModeController isActive={isControlBox} />
+        <Style.PaddingTop $isDarkMode={isDarkMode} $isActive={isControlBox}>
+          <h2>완료한 Do List</h2>
+          <p><strong>{countDone}</strong>개</p>
+        </Style.PaddingTop>
+      </Style.ControlContainer>
     </Style.Container>
   )
 }

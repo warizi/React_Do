@@ -23,7 +23,8 @@ const Cotnainer = styled.div`
   overflow: hidden;
   margin: 0 auto;
   border-radius: 10px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  border: 0.5px solid ${COLOR.gray};
+  /* box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); */
   background-color: ${({ $isDarkMode }) => $isDarkMode ? COLOR.black : COLOR.background };
   transform: ${({ $isUpdate }) => $isUpdate ? 'translateY(-10px)' : 'none' };
   ${({ $isUpdate }) => $isUpdate ? 'box-shadow: 0 20px 10px rgba(0, 0, 0, 0.3)' : '' };
@@ -45,7 +46,7 @@ const Cotnainer = styled.div`
     width: calc(100% - 30px);
     padding: 5px;
     border-radius: 10px;
-    background-color: ${({ $highlight }) => $highlight ? $highlight : '#FFF' };
+    background-color: ${({ $highlight }) => $highlight !== 'none' ? $highlight : 'rgba(0, 0, 0, 0)' };
     font-size: ${({ $fontSize }) => `${$fontSize}px` };
     border: none;
     resize: none;
@@ -98,7 +99,7 @@ const DeleteButton = styled.button`
 const CancelBackground = styled.div`
   position: fixed;
   display: ${({ $isUpdate }) => $isUpdate ? 'block' : 'none' };
-  background-color: ${COLOR.background};
+  background-color: ${({ $isDarkMode }) => $isDarkMode ? COLOR.black : COLOR.background};
   opacity: 0.5;
   top: 0;
   left: 0;

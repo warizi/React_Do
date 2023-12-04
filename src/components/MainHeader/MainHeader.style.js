@@ -90,7 +90,7 @@ const FlagContainer = styled.div`
     top: ${({ $active }) => $active ? '240px' : '0'};
     left: 0;
     transition: 0.4s;
-    background-color: ${({  $activeColor, $isDarkMode }) => $activeColor === 'none' ? $isDarkMode ? 'rgb(70, 70, 70)' : '#F3EDD7' : $activeColor};
+    background-color: ${({  $activeColor, $isDarkMode }) => $activeColor === 'none' ? $isDarkMode ? 'rgb(70, 70, 70)' : 'rgb(240, 240, 240)' : $activeColor};
     box-shadow: ${({ $active }) => $active ? '0 4px 8px rgba(0, 0, 0, 0.4)' : '0 4px 8px rgba(0, 0, 0, 0.1)'};
     ${({ $activeColor }) => $activeColor === 'none' ? 'z-index: 2003' : 'z-index: 2003'};
   }
@@ -98,15 +98,17 @@ const FlagContainer = styled.div`
 `;
 
 const ControlContainer = styled.div`
-  position: fixed;
+  position: absolute;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 170px 120px 160px;
+  grid-template-rows: 130px 170px 120px 160px;
   grid-template-areas: 
+    'z z'
     'a b' 
     'a c';
   left: 0;
   top: 0;
+  align-items: center;
   width: 100%;
   background-color: ${({ $isDarkMode }) => $isDarkMode ? 'rgba(0, 0, 0, 0.1)' : '#a0a0a015'};
   backdrop-filter: blur(10px);
@@ -115,7 +117,7 @@ const ControlContainer = styled.div`
   transition: 0.3s;
   overflow: scroll;
   height: calc(100vh - 90px);
-  padding-top: 105px;
+  /* padding-top: 105px; */
   z-index: 3000;
   transform: ${({ $isActive }) => $isActive ? 'translateY(0)' : 'translateY(-110%)'};
 
@@ -128,11 +130,42 @@ const ControlContainer = styled.div`
   & > div:nth-child(3) {
     grid-area: c;
   }
+  & > div:nth-child(4) {
+    grid-area: z;
+  }
 `;
 
+const PaddingTop = styled.div`
+  text-align: center;
+  width: 40%;
+  height: 100px;
+  margin: 20px;
+  border-radius: 10px;
+  padding: 10px 10px 0 10px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  margin: 5px auto 0;
+  background-color: ${({ $isDarkMode }) => $isDarkMode ? COLOR.black : COLOR.background};
+  transition: 0.4s;
+  transition-delay: 0.2s;
+  transform: ${({ $isActive }) => $isActive ? 'translateY(0)' : 'translateY(30px)'};
+
+  & > h2 {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+  & > p {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 30px;
+  }
+  & strong {
+    font-size: 30px;
+  }
+`;
 // eslint-disable-next-line
 export default {
   Container,
   FlagContainer,
   ControlContainer,
+  PaddingTop,
 }

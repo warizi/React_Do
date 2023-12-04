@@ -3,11 +3,11 @@ import { COLOR } from "../../../styles/COLOR";
 
 const Container = styled.div`
   width: 95%;
-  background-color: ${({ $isDarkMode }) => $isDarkMode ? 'rgb(70, 70, 70)' : COLOR.background};
-  padding: 10px 10px 0 10px;
+  background-color: ${({ $isDarkMode }) => $isDarkMode ? COLOR.black : COLOR.background};
   border-radius: 10px;
+  padding: 10px 10px 0 10px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-  margin: 5px auto 0;
+  margin: 0 auto;
   text-align: center;
   height: 110px;
   overflow: hidden;

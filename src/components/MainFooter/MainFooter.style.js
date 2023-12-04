@@ -43,7 +43,6 @@ const PrevContainer = styled.div`
   height: 90px;
   padding-top: 5px;
   z-index: 2998;
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
 
   & > div {
     position: relative;
@@ -51,7 +50,7 @@ const PrevContainer = styled.div`
     height: 60px;
     border-radius: 50%;  
     background-color: ${({ $isDarkMode }) => $isDarkMode ? COLOR.black : COLOR.background};
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2), 0 0 5px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
     z-index: 1000;
     transition: 0.2s;
   }
